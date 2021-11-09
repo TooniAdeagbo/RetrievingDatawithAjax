@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <body>
+<form  id = "addUserForm">
+    <fieldset>
+    
+    <!-- Form Name -->
+    <legend>Adding Object to Database and Retrieving it</legend>
+    
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="name">Name</label>  
+      <div class="col-md-4">
+        <input id="fname" name="fname" placeholder=""
+        class="form-control input-md" type ="text">
+        
+      </div>
+    </div>
+    
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="email">Email</label>  
+      <div class="col-md-4">
+        <input id="email" name="email" placeholder=" "
+        class="form-control input-md" type="text">
+        
+      </div>
+    </div>
+    
+    <!-- Button -->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="submit"></label>
+      <div class="col-md-4">
+          <input type="submit" value="Send User Data" class="btn btn-primary">
+      </div>
+</fieldset>
+</form>
+
+    <!-- Textarea -->
+    <form id="getUserDatabaseForm" class="form-horizontal">
+      <fieldset>
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="showUserDatabase">User Database</label>
+      <div class="col-md-4">
+          <textarea class="form-control" id="showUserDatabase"
+              name="showUserDatabase">Retrieved Database displayed here!</textarea>
+      </div>
+  </div>
+                        
+                        <div class="form-group">
+                          <label class="col-md-4 control-label" for="submit"></label>
+                          <div class="col-md-4">
+                              <input type="submit" value="Get User Database" class="btn btn-primary">
+                          </div>
+                      </div> 
+                    </fieldset>
+                  </form>   
+                
+
+
+<script>
+  $(document).ready(function(){
+    $('#addUserForm').submit(function (e) {
+      var user ={
+        firstname: $('input[name=fname]').val(),
+        email: $('input[name=email]').val(),
+      };
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:8000/emails',
+        data: user
+      })
+      .done(function (data) {
+        $('input[name=fname]').val(''); // so it resets the form when done
+        $('input[name=email]').val('');
+      });
+      e.preventDefault();
+    });
+    $('#getUserDatabaseForm').submit(function (e) {
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8000/emails'
+                })
+                    .done(function (data) {
+                        // display the database in the textarea and trigger an input change event
+                        $('#showUserDatabase').val(JSON.stringify(data, null, 2)).trigger('input');
+                    });
+                e.preventDefault(); // when method is called, the default action of the event will not be triggered.
+                                    // meand that clicked submit button will not take the browser to a new URL.
+            });
+
+            // some fun jQuery here that is not necessary for operation
+            // this sets an event handler to resize the textarea after 
+            // a change event is triggered the call is triggered earlier
+            // after the content received from the API is written to the
+            // textarea it resizes to the size of the contained text
+            // just a vanity addition really!
+            $("#showUserDatabase").on("input", function () {
+                this.style.height = (this.scrollHeight) + "px;overflow-y:hidden;";
+                this.style.height = "auto";
+                this.style.height = (this.scrollHeight) + "px";
+            });
+
+        });
+</script>
+    </body>
+ </html>   
